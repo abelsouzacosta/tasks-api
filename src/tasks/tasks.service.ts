@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Task, TaskStatus } from './task.model';
 import { v4 as uuid } from 'uuid';
 import { CreateTaskDto } from './dtos/create-task.dto';
+import { UdpateTaskDto } from './dtos/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -30,6 +31,13 @@ export class TasksService {
     };
 
     this.tasks.push(task);
+  }
+
+  async updateTask(id: string, body: UdpateTaskDto): Promise<void> {
+    const task = this.tasks.find((task) => task.id === id);
+
+    task.title = body.title || task.title;
+    task.description = body.description || task.description;
   }
 
   async deleteTask(id: string): Promise<void> {
