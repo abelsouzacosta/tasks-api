@@ -3,6 +3,7 @@ import { Task, TaskStatus } from './task.model';
 import { v4 as uuid } from 'uuid';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { UdpateTaskDto } from './dtos/update-task.dto';
+import { GetTasksFilterDto } from './dtos/get-task-filter.dto';
 
 @Injectable()
 export class TasksService {
@@ -12,8 +13,29 @@ export class TasksService {
     this.tasks = [];
   }
 
-  async getAllTasks(): Promise<Task[]> {
+  async getTasks(): Promise<Task[]> {
     return this.tasks;
+  }
+
+  async getTasksWithFilters(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    const { search, status } = filterDto;
+    let tasks = await this.getTasks();
+
+    if (status) {
+      tasks = tasks.filter((task) => task.status === status);
+    }
+
+    if (search) {
+      tasks = tasks.filter((task) => {
+        if (task.title.includes(search) || task.description.includes(search)) {
+          return true;
+        }
+
+        return false;
+      });
+    }
+
+    return tasks;
   }
 
   async getTaskById(id: string): Promise<Task> {
