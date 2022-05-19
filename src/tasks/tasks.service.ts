@@ -25,6 +25,14 @@ export class TasksService {
     return this.tasksRepository.find({});
   }
 
+  async getTask(id: string): Promise<Task> {
+    return this.tasksRepository.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
   async update(id: string, body: UdpateTaskDto): Promise<void> {
     const task = await this.tasksRepository.findOne({
       where: {

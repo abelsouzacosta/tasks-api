@@ -30,6 +30,11 @@ export class TasksController {
     return this.tasksService.list();
   }
 
+  @Get('/:id')
+  async get(@Param('id') id: string): Promise<Task> {
+    return this.tasksService.getTask(id);
+  }
+
   @Put('/:id')
   async update(
     @Param('id') id: string,
