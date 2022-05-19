@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Put,
   Query,
@@ -39,5 +38,10 @@ export class TasksController {
     console.log(body);
 
     return this.tasksService.update(id, body);
+  }
+
+  @Delete('/:id')
+  async delete(@Param('id') id: string): Promise<void> {
+    return this.tasksService.delete(id);
   }
 }
