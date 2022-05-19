@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { TasksRepository } from './tasks.repository';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Task } from './task.entity';
 
 @Injectable()
 export class TasksService {
@@ -17,5 +18,9 @@ export class TasksService {
     });
 
     await this.tasksRepository.save(task);
+  }
+
+  async list(): Promise<Task[]> {
+    return this.tasksRepository.find({});
   }
 }
