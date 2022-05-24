@@ -4,12 +4,14 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ChangeTaskStatusDto } from './dtos/change-task-status.dto';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { GetTasksFilterDto } from './dtos/get-task-filter.dto';
 import { UdpateTaskDto } from './dtos/update-task.dto';
@@ -42,6 +44,15 @@ export class TasksController {
     @Body() body: UdpateTaskDto,
   ): Promise<void> {
     return this.tasksService.update(id, body);
+  }
+
+  @Patch('/:id')
+  @UsePipes(new ValidationPipe())
+  async changeTaskStatus(
+    @Param('id') id: string,
+    @Body() body: ChangeTaskStatusDto,
+  ): Promise<void> {
+    return this.tasksService.changeTaskStatus(id, body);
   }
 
   @Delete('/:id')
