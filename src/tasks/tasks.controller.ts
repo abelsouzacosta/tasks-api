@@ -41,8 +41,6 @@ export class TasksController {
     @Param('id') id: string,
     @Body() body: UdpateTaskDto,
   ): Promise<void> {
-    console.log(body);
-
     return this.tasksService.update(id, body);
   }
 
