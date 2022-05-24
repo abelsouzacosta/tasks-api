@@ -12,7 +12,7 @@ import { CreateUserDto } from './dtos/create-user.dto';
 export class AuthController {
   constructor(private authSerVice: AuthService) {}
 
-  @Post('/create-user')
+  @Post('/singup')
   @UsePipes(new ValidationPipe())
   async create(@Body() body: CreateUserDto): Promise<void> {
     return this.authSerVice.createUser(body);
