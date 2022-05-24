@@ -6,10 +6,12 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { CreateTaskDto } from './dtos/create-task.dto';
+import { GetTasksFilterDto } from './dtos/get-task-filter.dto';
 import { UdpateTaskDto } from './dtos/update-task.dto';
 import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
@@ -25,8 +27,8 @@ export class TasksController {
   }
 
   @Get()
-  async list(): Promise<Task[]> {
-    return this.tasksService.list();
+  async list(@Query() filterDto?: GetTasksFilterDto): Promise<Task[]> {
+    return this.tasksService.list(filterDto);
   }
 
   @Get('/:id')

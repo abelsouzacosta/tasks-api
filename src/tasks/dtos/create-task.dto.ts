@@ -6,8 +6,8 @@ export class CreateTaskDto {
   @MinLength(2, {
     message: 'The title of a task must have at least 2 characters',
   })
-  @MaxLength(10, {
-    message: 'The title of a task must be a maximum of 10 characters',
+  @MaxLength(50, {
+    message: 'The title of a task must be a maximum of 50 characters',
   })
   title: string;
 

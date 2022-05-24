@@ -4,6 +4,7 @@ import { TasksRepository } from './tasks.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { UdpateTaskDto } from './dtos/update-task.dto';
+import { GetTasksFilterDto } from './dtos/get-task-filter.dto';
 
 @Injectable()
 export class TasksService {
@@ -21,8 +22,8 @@ export class TasksService {
     await this.tasksRepository.save(task);
   }
 
-  async list(): Promise<Task[]> {
-    return this.tasksRepository.find({});
+  async list(filterDto?: GetTasksFilterDto): Promise<Task[]> {
+    return this.tasksRepository.getTasks(filterDto);
   }
 
   async getTask(id: string): Promise<Task> {
