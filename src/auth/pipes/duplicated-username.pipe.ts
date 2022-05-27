@@ -5,7 +5,7 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from '../dtos/create-user.dto';
+import { AuthCredentialsDto } from '../dtos/auth-credentials-dto';
 import { UsersRepository } from '../users.repository';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class DuplicatedUsernamePipe implements PipeTransform {
     private userRepository: UsersRepository,
   ) {}
 
-  async transform({ username, password }: CreateUserDto) {
+  async transform({ username, password }: AuthCredentialsDto) {
     const foundUser = await this.userRepository.findOneUserByUsername(username);
 
     if (foundUser)

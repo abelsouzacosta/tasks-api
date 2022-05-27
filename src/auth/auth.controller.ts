@@ -6,7 +6,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './dtos/create-user.dto';
+import { AuthCredentialsDto } from './dtos/auth-credentials-dto';
 import { DuplicatedUsernamePipe } from './pipes/duplicated-username.pipe';
 import { HashPasswordPipe } from './pipes/hash-password.pipe';
 
@@ -16,7 +16,7 @@ export class AuthController {
 
   @Post('/singup')
   @UsePipes(new ValidationPipe(), DuplicatedUsernamePipe, HashPasswordPipe)
-  async create(@Body() body: CreateUserDto): Promise<void> {
+  async create(@Body() body: AuthCredentialsDto): Promise<void> {
     return this.authSerVice.createUser(body);
   }
 }
