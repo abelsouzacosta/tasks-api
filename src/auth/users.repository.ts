@@ -15,4 +15,14 @@ export class UsersRepository extends Repository<User> {
 
     await this.save(user);
   }
+
+  async findOneUserByUsername(username: string): Promise<User> {
+    const user = await this.findOne({
+      where: {
+        username,
+      },
+    });
+
+    return user;
+  }
 }
