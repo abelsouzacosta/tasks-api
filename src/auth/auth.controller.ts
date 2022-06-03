@@ -23,7 +23,9 @@ export class AuthController {
 
   @Post('/singin')
   @UsePipes(new ValidationPipe(), UserNotFoundByUsernamePipe)
-  async login(@Body() body: AuthCredentialsDto) {
+  async login(
+    @Body() body: AuthCredentialsDto,
+  ): Promise<{ accessToken: string }> {
     return this.authService.createSession(body);
   }
 }
