@@ -1,8 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { User } from './user.entity';
+import { AuthCredentialsDto } from './dtos/auth-credentials-dto';
 import { UsersRepository } from './users.repository';
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -11,23 +11,18 @@ export class AuthService {
     private userRepository: UsersRepository,
   ) {}
 
-  private async getUserByUsername(username: string): Promise<User> {
-    const user = await this.userRepository.findOne({
-      where: {
-        username,
-      },
-    });
-
-    return user;
+  async createUser(body: AuthCredentialsDto): Promise<void> {
+    await this.userRepository.createUser(body);
   }
 
-  async createUser(body: CreateUserDto): Promise<void> {
-    const userAlreadyExists = await this.getUserByUsername(body.username);
+  async createSession(body: AuthCredentialsDto): Promise<string> {
+    const user = await this.userRepository.findOneUserByUsername(body.username);
 
-    if (userAlreadyExists) {
-      throw new HttpException(`Duplicated username`, HttpStatus.CONFLICT);
-    }
+    const passwordIsValid = await compare(body.password, user.password);
 
-    await this.userRepository.createUser(body);
+    if (!passwordIsValid)
+      throw new UnauthorizedException('Please check your login credentials');
+
+    return `ok`;
   }
 }
