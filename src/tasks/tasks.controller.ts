@@ -13,6 +13,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
+import { User } from 'src/auth/user.entity';
 import { ChangeTaskStatusDto } from './dtos/change-task-status.dto';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { GetTasksFilterDto } from './dtos/get-task-filter.dto';
@@ -28,8 +30,11 @@ export class TasksController {
 
   @Post()
   @UsePipes(new ValidationPipe())
-  async create(@Body() data: CreateTaskDto): Promise<void> {
-    return this.tasksService.create(data);
+  async create(
+    @Body() data: CreateTaskDto,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.tasksService.create(data, user);
   }
 
   @Get()
