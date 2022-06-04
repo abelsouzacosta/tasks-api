@@ -1,10 +1,11 @@
+import { User } from 'src/auth/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { GetTasksFilterDto } from './dtos/get-task-filter.dto';
 import { Task } from './task.entity';
 
 @EntityRepository(Task)
 export class TasksRepository extends Repository<Task> {
-  async getTasks(filterDto?: GetTasksFilterDto): Promise<Task[]> {
+  async getTasks(user: User, filterDto?: GetTasksFilterDto): Promise<Task[]> {
     const { search, status } = filterDto;
 
     const query = this.createQueryBuilder('task');
@@ -20,8 +21,9 @@ export class TasksRepository extends Repository<Task> {
       );
     }
 
-    const tasks = await query.getMany();
+    query.where({ user });
 
+    const tasks = await query.getMany();
     return tasks;
   }
 }
