@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { TasksRepository } from './tasks.repository';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { UdpateTaskDto } from './dtos/update-task.dto';
 import { GetTasksFilterDto } from './dtos/get-task-filter.dto';
 import { ChangeTaskStatusDto } from './dtos/change-task-status.dto';
 import { User } from 'src/auth/user.entity';
+import { GetUser } from 'src/auth/decorators/get-user.decorator';
 
 @Injectable()
 export class TasksService {
@@ -38,12 +39,19 @@ export class TasksService {
     });
   }
 
-  async update(id: string, body: UdpateTaskDto): Promise<void> {
+  async update(id: string, body: UdpateTaskDto, user: User): Promise<void> {
     const task = await this.tasksRepository.findOne({
       where: {
         id,
+        user,
       },
     });
+
+    if (!task)
+      throw new HttpException(
+        `User not authorized to modify task ${id}`,
+        HttpStatus.UNAUTHORIZED,
+      );
 
     task.title = body.title || task.title;
     task.description = body.description || task.description;

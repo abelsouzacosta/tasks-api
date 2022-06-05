@@ -58,8 +58,9 @@ export class TasksController {
   async update(
     @Param('id', NotFoundTaskPipe) id: string,
     @Body() body: UdpateTaskDto,
+    @GetUser() user: User,
   ): Promise<void> {
-    return this.tasksService.update(id, body);
+    return this.tasksService.update(id, body, user);
   }
 
   @Patch('/:id')
