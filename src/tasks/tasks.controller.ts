@@ -46,8 +46,11 @@ export class TasksController {
   }
 
   @Get('/:id')
-  async get(@Param('id', NotFoundTaskPipe) id: string): Promise<Task> {
-    return this.tasksService.getTask(id);
+  async get(
+    @Param('id', NotFoundTaskPipe) id: string,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    return this.tasksService.getTask(id, user);
   }
 
   @Put('/:id')
