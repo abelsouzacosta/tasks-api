@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
@@ -26,7 +27,10 @@ import { TasksService } from './tasks.service';
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
-  constructor(private tasksService: TasksService) {}
+  private logger: Logger;
+  constructor(private tasksService: TasksService) {
+    this.logger = new Logger();
+  }
 
   @Post()
   @UsePipes(new ValidationPipe())
@@ -34,6 +38,11 @@ export class TasksController {
     @Body() data: CreateTaskDto,
     @GetUser() user: User,
   ): Promise<void> {
+    this.logger.verbose(
+      `User: ${user.username} - ${
+        user.id
+      }, is creating a new task ${JSON.stringify(data)}`,
+    );
     return this.tasksService.create(data, user);
   }
 
@@ -42,6 +51,7 @@ export class TasksController {
     @GetUser() user: User,
     @Query() filterDto?: GetTasksFilterDto,
   ): Promise<Task[]> {
+    this.logger.verbose(`Retrieving task(s) applying filters ${filterDto}`);
     return this.tasksService.list(user, filterDto);
   }
 
@@ -50,6 +60,9 @@ export class TasksController {
     @Param('id', NotFoundTaskPipe) id: string,
     @GetUser() user: User,
   ): Promise<Task> {
+    this.logger.verbose(
+      `User: ${user.username} - ${user.id} getting task with id ${id}`,
+    );
     return this.tasksService.getTask(id, user);
   }
 
@@ -70,6 +83,9 @@ export class TasksController {
     @Body() body: ChangeTaskStatusDto,
     @GetUser() user: User,
   ): Promise<void> {
+    this.logger.verbose(
+      `User: ${user.username} - ${user.id} change task with id ${id} status to ${body.status}`,
+    );
     return this.tasksService.changeTaskStatus(id, body, user);
   }
 
@@ -78,6 +94,9 @@ export class TasksController {
     @Param('id', NotFoundTaskPipe) id: string,
     @GetUser() user: User,
   ): Promise<void> {
+    this.logger.verbose(
+      `User: ${user.username} - ${user.id} is deleting task with id ${id}`,
+    );
     return this.tasksService.delete(id, user);
   }
 }
