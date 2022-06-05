@@ -7,6 +7,7 @@ import { UdpateTaskDto } from './dtos/update-task.dto';
 import { GetTasksFilterDto } from './dtos/get-task-filter.dto';
 import { ChangeTaskStatusDto } from './dtos/change-task-status.dto';
 import { User } from 'src/auth/user.entity';
+import { GetTaskByIdAndUserDto } from './dtos/get-task-id-user.dto';
 
 @Injectable()
 export class TasksService {
@@ -14,6 +15,23 @@ export class TasksService {
     @InjectRepository(TasksRepository)
     private tasksRepository: TasksRepository,
   ) {}
+
+  async getTaskByIdAndUser({ id, user }: GetTaskByIdAndUserDto): Promise<Task> {
+    const task = await this.tasksRepository.findOne({
+      where: {
+        id,
+        user,
+      },
+    });
+
+    if (!task)
+      throw new HttpException(
+        `User not authorized to modify task ${id}`,
+        HttpStatus.UNAUTHORIZED,
+      );
+
+    return task;
+  }
 
   async create(data: CreateTaskDto, user: User): Promise<void> {
     const task = this.tasksRepository.create({
@@ -39,18 +57,7 @@ export class TasksService {
   }
 
   async update(id: string, body: UdpateTaskDto, user: User): Promise<void> {
-    const task = await this.tasksRepository.findOne({
-      where: {
-        id,
-        user,
-      },
-    });
-
-    if (!task)
-      throw new HttpException(
-        `User not authorized to modify task ${id}`,
-        HttpStatus.UNAUTHORIZED,
-      );
+    const task = await this.getTaskByIdAndUser({ id, user });
 
     task.title = body.title || task.title;
     task.description = body.description || task.description;
@@ -63,18 +70,7 @@ export class TasksService {
     body: ChangeTaskStatusDto,
     user: User,
   ): Promise<void> {
-    const task = await this.tasksRepository.findOne({
-      where: {
-        id,
-        user,
-      },
-    });
-
-    if (!task)
-      throw new HttpException(
-        `User not authorized to modify task ${id}`,
-        HttpStatus.UNAUTHORIZED,
-      );
+    const task = await this.getTaskByIdAndUser({ id, user });
 
     task.status = body.status;
 
@@ -82,18 +78,7 @@ export class TasksService {
   }
 
   async delete(id: string, user: User): Promise<void> {
-    const task = await this.tasksRepository.findOne({
-      where: {
-        id,
-        user,
-      },
-    });
-
-    if (!task)
-      throw new HttpException(
-        `User not authorized to modify task ${id}`,
-        HttpStatus.UNAUTHORIZED,
-      );
+    const task = await this.getTaskByIdAndUser({ id, user });
 
     await this.tasksRepository.remove(task);
   }
