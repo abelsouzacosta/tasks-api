@@ -7,7 +7,6 @@ import { UdpateTaskDto } from './dtos/update-task.dto';
 import { GetTasksFilterDto } from './dtos/get-task-filter.dto';
 import { ChangeTaskStatusDto } from './dtos/change-task-status.dto';
 import { User } from 'src/auth/user.entity';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
 
 @Injectable()
 export class TasksService {
@@ -59,24 +58,42 @@ export class TasksService {
     await this.tasksRepository.save(task);
   }
 
-  async changeTaskStatus(id: string, body: ChangeTaskStatusDto): Promise<void> {
+  async changeTaskStatus(
+    id: string,
+    body: ChangeTaskStatusDto,
+    user: User,
+  ): Promise<void> {
     const task = await this.tasksRepository.findOne({
       where: {
         id,
+        user,
       },
     });
+
+    if (!task)
+      throw new HttpException(
+        `User not authorized to modify task ${id}`,
+        HttpStatus.UNAUTHORIZED,
+      );
 
     task.status = body.status;
 
     await this.tasksRepository.save(task);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string, user: User): Promise<void> {
     const task = await this.tasksRepository.findOne({
       where: {
         id,
+        user,
       },
     });
+
+    if (!task)
+      throw new HttpException(
+        `User not authorized to modify task ${id}`,
+        HttpStatus.UNAUTHORIZED,
+      );
 
     await this.tasksRepository.remove(task);
   }

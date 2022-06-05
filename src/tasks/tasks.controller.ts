@@ -68,12 +68,16 @@ export class TasksController {
   async changeTaskStatus(
     @Param('id', NotFoundTaskPipe) id: string,
     @Body() body: ChangeTaskStatusDto,
+    @GetUser() user: User,
   ): Promise<void> {
-    return this.tasksService.changeTaskStatus(id, body);
+    return this.tasksService.changeTaskStatus(id, body, user);
   }
 
   @Delete('/:id')
-  async delete(@Param('id', NotFoundTaskPipe) id: string): Promise<void> {
-    return this.tasksService.delete(id);
+  async delete(
+    @Param('id', NotFoundTaskPipe) id: string,
+    @GetUser() user: User,
+  ): Promise<void> {
+    return this.tasksService.delete(id, user);
   }
 }
